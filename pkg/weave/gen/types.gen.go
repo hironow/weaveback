@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	BearerAuthScopes = "BearerAuth.Scopes"
+	BasicAuthScopes = "BasicAuth.Scopes"
 )
 
 // Defines values for ConvertSpecTo.

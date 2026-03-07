@@ -45,7 +45,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
-      - BearerAuth: []
+      - BasicAuth: []
   /feedback/batch/create:
     post:
       tags:
@@ -73,7 +73,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
-      - BearerAuth: []
+      - BasicAuth: []
   /feedback/query:
     post:
       tags:
@@ -101,7 +101,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
-      - BearerAuth: []
+      - BasicAuth: []
   /feedback/purge:
     post:
       tags:
@@ -129,7 +129,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
-      - BearerAuth: []
+      - BasicAuth: []
   /feedback/replace:
     post:
       tags:
@@ -157,7 +157,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
-      - BearerAuth: []
+      - BasicAuth: []
 components:
   schemas:
     AndOperation:
@@ -1021,9 +1021,9 @@ components:
       - type
       title: ValidationError
   securitySchemes:
-    BearerAuth:
+    BasicAuth:
       type: http
-      scheme: bearer
-      description: W&B API key as Bearer token
+      scheme: basic
+      description: 'W&B API key via HTTP Basic auth (username: "api", password: WANDB_API_KEY)'
 security:
-- BearerAuth: []
+- BasicAuth: []

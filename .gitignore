@@ -1,1 +1,38 @@
+# Environment
 .env
+.env.*
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go test binary
+*.test
+
+# Go coverage
+*.out
+coverage.html
+
+# Go vendor (use go mod)
+vendor/
+
+# Build output
+.run/
+/weaveback
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Expedition workspace
+.expedition/

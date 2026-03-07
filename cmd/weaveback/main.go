@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"os"
+
+	"github.com/hironow/rest/cmd/weaveback/cli"
 )
 
 func main() {
-	fmt.Fprintln(os.Stderr, "weaveback: not yet implemented")
-	os.Exit(1)
+	code := cli.Run(os.Args, os.Stdout, os.Stderr)
+	os.Exit(code)
 }

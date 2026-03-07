@@ -13,23 +13,23 @@ import (
 
 func TestNewClient_MissingAPIKey(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "")
+	apiKey := ""
 
 	// when
-	_, err := weave.NewClient("https://trace.wandb.ai")
+	_, err := weave.NewClient("https://trace.wandb.ai", apiKey)
 
 	// then
 	if err == nil {
-		t.Fatal("expected error when WANDB_API_KEY is empty, got nil")
+		t.Fatal("expected error when apiKey is empty, got nil")
 	}
 }
 
 func TestNewClient_WithAPIKey(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-api-key-123")
+	apiKey := "test-api-key-123"
 
 	// when
-	client, err := weave.NewClient("https://trace.wandb.ai")
+	client, err := weave.NewClient("https://trace.wandb.ai", apiKey)
 
 	// then
 	if err != nil {
@@ -42,7 +42,7 @@ func TestNewClient_WithAPIKey(t *testing.T) {
 
 func TestNewClient_AuthorizationHeader(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-bearer-token")
+	apiKey := "test-bearer-token"
 
 	var capturedAuthHeader string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +53,7 @@ func TestNewClient_AuthorizationHeader(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client, err := weave.NewClient(srv.URL)
+	client, err := weave.NewClient(srv.URL, apiKey)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -117,8 +117,6 @@ func TestClientError_NonRetryableStatuses(t *testing.T) {
 
 func TestCreateFeedback_Success(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/feedback/create" {
 			t.Errorf("unexpected path: %s", r.URL.Path)
@@ -132,7 +130,7 @@ func TestCreateFeedback_Success(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client, err := weave.NewClient(srv.URL)
+	client, err := weave.NewClient(srv.URL, "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -155,8 +153,6 @@ func TestCreateFeedback_Success(t *testing.T) {
 
 func TestCreateFeedbackBatch_Success(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/feedback/batch/create" {
 			t.Errorf("unexpected path: %s", r.URL.Path)
@@ -167,7 +163,7 @@ func TestCreateFeedbackBatch_Success(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client, err := weave.NewClient(srv.URL)
+	client, err := weave.NewClient(srv.URL, "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -188,8 +184,6 @@ func TestCreateFeedbackBatch_Success(t *testing.T) {
 
 func TestQueryFeedback_Success(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/feedback/query" {
 			t.Errorf("unexpected path: %s", r.URL.Path)
@@ -200,7 +194,7 @@ func TestQueryFeedback_Success(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client, err := weave.NewClient(srv.URL)
+	client, err := weave.NewClient(srv.URL, "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -221,8 +215,6 @@ func TestQueryFeedback_Success(t *testing.T) {
 
 func TestPurgeFeedback_Success(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/feedback/purge" {
 			t.Errorf("unexpected path: %s", r.URL.Path)
@@ -233,7 +225,7 @@ func TestPurgeFeedback_Success(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client, err := weave.NewClient(srv.URL)
+	client, err := weave.NewClient(srv.URL, "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -255,8 +247,6 @@ func TestPurgeFeedback_Success(t *testing.T) {
 
 func TestReplaceFeedback_Success(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/feedback/replace" {
 			t.Errorf("unexpected path: %s", r.URL.Path)
@@ -267,7 +257,7 @@ func TestReplaceFeedback_Success(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client, err := weave.NewClient(srv.URL)
+	client, err := weave.NewClient(srv.URL, "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -291,8 +281,6 @@ func TestReplaceFeedback_Success(t *testing.T) {
 
 func TestCreateFeedback_HTTPError(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnprocessableEntity)
@@ -304,7 +292,7 @@ func TestCreateFeedback_HTTPError(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client, err := weave.NewClient(srv.URL)
+	client, err := weave.NewClient(srv.URL, "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

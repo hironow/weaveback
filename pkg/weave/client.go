@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
@@ -13,8 +12,6 @@ import (
 )
 
 const (
-	envWandbAPIKey = "WANDB_API_KEY"
-
 	defaultRetryMax     = 3
 	defaultRetryWaitMin = 1 * time.Second
 	defaultRetryWaitMax = 10 * time.Second
@@ -43,11 +40,10 @@ type Client struct {
 }
 
 // NewClient creates a new Weave API client.
-// It reads the WANDB_API_KEY environment variable for HTTP Basic authentication.
-func NewClient(serverURL string) (*Client, error) {
-	apiKey := os.Getenv(envWandbAPIKey)
+// apiKey is used for HTTP Basic authentication (user "api", password apiKey).
+func NewClient(serverURL string, apiKey string) (*Client, error) {
 	if apiKey == "" {
-		return nil, fmt.Errorf("environment variable %s is required", envWandbAPIKey)
+		return nil, fmt.Errorf("apiKey is required")
 	}
 
 	retryClient := retryablehttp.NewClient()

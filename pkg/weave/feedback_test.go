@@ -14,8 +14,7 @@ import (
 
 func TestAddReaction_EmptyEmoji(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-	client, err := weave.NewClient("https://example.com")
+	client, err := weave.NewClient("https://example.com", "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -34,8 +33,7 @@ func TestAddReaction_EmptyEmoji(t *testing.T) {
 
 func TestAddReaction_TooLongEmoji(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-	client, err := weave.NewClient("https://example.com")
+	client, err := weave.NewClient("https://example.com", "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -64,8 +62,7 @@ func TestAddReaction_InvalidCharsEmoji(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
-			t.Setenv("WANDB_API_KEY", "test-key")
-			client, err := weave.NewClient("https://example.com")
+			client, err := weave.NewClient("https://example.com", "test-key")
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
@@ -96,8 +93,6 @@ func TestAddReaction_ValidEmoji(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
-			t.Setenv("WANDB_API_KEY", "test-key")
-
 			var capturedBody gen.FeedbackCreateReq
 			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				json.NewDecoder(r.Body).Decode(&capturedBody)
@@ -107,7 +102,7 @@ func TestAddReaction_ValidEmoji(t *testing.T) {
 			}))
 			defer srv.Close()
 
-			client, err := weave.NewClient(srv.URL)
+			client, err := weave.NewClient(srv.URL, "test-key")
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
@@ -141,8 +136,7 @@ func TestAddReaction_ValidEmoji(t *testing.T) {
 
 func TestAddNote_EmptyNote(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-	client, err := weave.NewClient("https://example.com")
+	client, err := weave.NewClient("https://example.com", "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -161,8 +155,6 @@ func TestAddNote_EmptyNote(t *testing.T) {
 
 func TestAddNote_ValidNote(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-
 	var capturedBody gen.FeedbackCreateReq
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewDecoder(r.Body).Decode(&capturedBody)
@@ -172,7 +164,7 @@ func TestAddNote_ValidNote(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client, err := weave.NewClient(srv.URL)
+	client, err := weave.NewClient(srv.URL, "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -204,8 +196,6 @@ func TestAddNote_ValidNote(t *testing.T) {
 
 func TestAddNote_PassesThroughAPIError(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnprocessableEntity)
@@ -213,7 +203,7 @@ func TestAddNote_PassesThroughAPIError(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client, err := weave.NewClient(srv.URL)
+	client, err := weave.NewClient(srv.URL, "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -236,8 +226,6 @@ func TestAddNote_PassesThroughAPIError(t *testing.T) {
 
 func TestAddReaction_PassesThroughAPIError(t *testing.T) {
 	// given
-	t.Setenv("WANDB_API_KEY", "test-key")
-
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -245,7 +233,7 @@ func TestAddReaction_PassesThroughAPIError(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client, err := weave.NewClient(srv.URL)
+	client, err := weave.NewClient(srv.URL, "test-key")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

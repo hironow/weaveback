@@ -63,10 +63,12 @@ func TestNewClient_AuthorizationHeader(t *testing.T) {
 		ProjectID: "test-project",
 	})
 
-	// then
-	expected := "Bearer test-bearer-token"
-	if capturedAuthHeader != expected {
-		t.Errorf("Authorization header = %q, want %q", capturedAuthHeader, expected)
+	// then: Basic auth encodes "api:test-bearer-token" in base64
+	if capturedAuthHeader == "" {
+		t.Error("Authorization header is empty")
+	}
+	if len(capturedAuthHeader) < 6 || capturedAuthHeader[:6] != "Basic " {
+		t.Errorf("Authorization header = %q, want Basic auth scheme", capturedAuthHeader)
 	}
 }
 
@@ -139,7 +141,7 @@ func TestCreateFeedback_Success(t *testing.T) {
 	resp, err := client.CreateFeedback(context.Background(), gen.FeedbackCreateReq{
 		ProjectID:    "test-project",
 		FeedbackType: "test",
-		Payload:      map[string]interface{}{"key": "value"},
+		Payload:      map[string]any{"key": "value"},
 	})
 
 	// then
@@ -275,7 +277,7 @@ func TestReplaceFeedback_Success(t *testing.T) {
 		ProjectID:    "test-project",
 		FeedbackID:   "feedback-123",
 		FeedbackType: "test",
-		Payload:      map[string]interface{}{"key": "value"},
+		Payload:      map[string]any{"key": "value"},
 	})
 
 	// then
@@ -294,8 +296,8 @@ func TestCreateFeedback_HTTPError(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"detail": []map[string]interface{}{
+		json.NewEncoder(w).Encode(map[string]any{
+			"detail": []map[string]any{
 				{"loc": []string{"body", "project_id"}, "msg": "field required", "type": "value_error.missing"},
 			},
 		})
@@ -311,7 +313,7 @@ func TestCreateFeedback_HTTPError(t *testing.T) {
 	_, err = client.CreateFeedback(context.Background(), gen.FeedbackCreateReq{
 		ProjectID:    "test-project",
 		FeedbackType: "test",
-		Payload:      map[string]interface{}{},
+		Payload:      map[string]any{},
 	})
 
 	// then

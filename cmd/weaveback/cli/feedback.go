@@ -93,6 +93,7 @@ func runFeedbackCreate(args []string, stdin io.Reader, stdout, stderr io.Writer)
 	fs.SetOutput(stderr)
 
 	projectID := fs.String("project-id", "", "Project ID (required)")
+	weaveRef := fs.String("weave-ref", "", "Weave reference URI (required)")
 	feedbackType := fs.String("feedback-type", "", "Feedback type (required)")
 	payload := fs.String("payload", "", "Payload as JSON string (required)")
 	callRef := fs.String("call-ref", "", "Call reference (optional)")
@@ -111,8 +112,8 @@ func runFeedbackCreate(args []string, stdin io.Reader, stdout, stderr io.Writer)
 		return runFeedbackCreateStdin(*token, stdin, stdout, stderr)
 	}
 
-	if *projectID == "" || *feedbackType == "" || *payload == "" {
-		writeError(stderr, "required flags: --project-id, --feedback-type, --payload", ExitUserError)
+	if *projectID == "" || *weaveRef == "" || *feedbackType == "" || *payload == "" {
+		writeError(stderr, "required flags: --project-id, --weave-ref, --feedback-type, --payload", ExitUserError)
 		fs.Usage()
 		return ExitUserError
 	}
@@ -130,6 +131,7 @@ func runFeedbackCreate(args []string, stdin io.Reader, stdout, stderr io.Writer)
 
 	req := gen.FeedbackCreateReq{
 		ProjectID:    *projectID,
+		WeaveRef:     *weaveRef,
 		FeedbackType: *feedbackType,
 		Payload:      payloadMap,
 	}
@@ -263,6 +265,7 @@ func runFeedbackReplace(args []string, stdout, stderr io.Writer) int {
 
 	feedbackID := fs.String("feedback-id", "", "Feedback ID to replace (required)")
 	projectID := fs.String("project-id", "", "Project ID (required)")
+	weaveRef := fs.String("weave-ref", "", "Weave reference URI (required)")
 	feedbackType := fs.String("feedback-type", "", "Feedback type (required)")
 	payload := fs.String("payload", "", "Payload as JSON string (required)")
 	token := fs.String("token", "", "API token (overrides WANDB_API_KEY)")
@@ -271,8 +274,8 @@ func runFeedbackReplace(args []string, stdout, stderr io.Writer) int {
 		return ExitUserError
 	}
 
-	if *feedbackID == "" || *projectID == "" || *feedbackType == "" || *payload == "" {
-		writeError(stderr, "required flags: --feedback-id, --project-id, --feedback-type, --payload", ExitUserError)
+	if *feedbackID == "" || *projectID == "" || *weaveRef == "" || *feedbackType == "" || *payload == "" {
+		writeError(stderr, "required flags: --feedback-id, --project-id, --weave-ref, --feedback-type, --payload", ExitUserError)
 		fs.Usage()
 		return ExitUserError
 	}
@@ -291,6 +294,7 @@ func runFeedbackReplace(args []string, stdout, stderr io.Writer) int {
 	req := gen.FeedbackReplaceReq{
 		FeedbackID:   *feedbackID,
 		ProjectID:    *projectID,
+		WeaveRef:     *weaveRef,
 		FeedbackType: *feedbackType,
 		Payload:      payloadMap,
 	}

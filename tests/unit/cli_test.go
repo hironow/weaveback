@@ -172,6 +172,51 @@ func TestFeedbackBatchCreate_NonexistentFile(t *testing.T) {
 	}
 }
 
+func TestFeedbackCreate_MissingWeaveRef(t *testing.T) {
+	// given
+	var stdout, stderr bytes.Buffer
+
+	// when
+	code := cli.Run([]string{
+		"weaveback", "feedback", "create",
+		"--project-id", "test-project",
+		"--feedback-type", "note",
+		"--payload", `{"note":"hello"}`,
+	}, nil, &stdout, &stderr)
+
+	// then
+	if code != 1 {
+		t.Errorf("expected exit code 1 for missing --weave-ref, got %d", code)
+	}
+	errOut := stderr.String()
+	if !strings.Contains(errOut, "weave-ref") {
+		t.Errorf("expected error about weave-ref on stderr, got: %s", errOut)
+	}
+}
+
+func TestFeedbackReplace_MissingWeaveRef(t *testing.T) {
+	// given
+	var stdout, stderr bytes.Buffer
+
+	// when
+	code := cli.Run([]string{
+		"weaveback", "feedback", "replace",
+		"--feedback-id", "test-id",
+		"--project-id", "test-project",
+		"--feedback-type", "note",
+		"--payload", `{"note":"hello"}`,
+	}, nil, &stdout, &stderr)
+
+	// then
+	if code != 1 {
+		t.Errorf("expected exit code 1 for missing --weave-ref, got %d", code)
+	}
+	errOut := stderr.String()
+	if !strings.Contains(errOut, "weave-ref") {
+		t.Errorf("expected error about weave-ref on stderr, got: %s", errOut)
+	}
+}
+
 func TestFeedbackCreate_InvalidPayloadJSON(t *testing.T) {
 	// given
 	var stdout, stderr bytes.Buffer
@@ -180,6 +225,7 @@ func TestFeedbackCreate_InvalidPayloadJSON(t *testing.T) {
 	code := cli.Run([]string{
 		"weaveback", "feedback", "create",
 		"--project-id", "test",
+		"--weave-ref", "weave:///entity/project/object/name:v1",
 		"--feedback-type", "note",
 		"--payload", "not-json",
 	}, nil, &stdout, &stderr)
@@ -199,6 +245,7 @@ func TestFeedbackCreate_NoToken_ExitCode2(t *testing.T) {
 	code := cli.Run([]string{
 		"weaveback", "feedback", "create",
 		"--project-id", "test-project",
+		"--weave-ref", "weave:///entity/project/object/name:v1",
 		"--feedback-type", "note",
 		"--payload", `{"note":"hello"}`,
 	}, nil, &stdout, &stderr)

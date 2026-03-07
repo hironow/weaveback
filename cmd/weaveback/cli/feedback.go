@@ -72,9 +72,7 @@ func newClient(tokenFlag string, stderr io.Writer) (*weave.Client, int) {
 		writeError(stderr, err.Error(), ExitAuthError)
 		return nil, ExitAuthError
 	}
-	// Set env for the client constructor which reads WANDB_API_KEY
-	os.Setenv(envWandbAPIKey, token)
-	client, err := weave.NewClient(defaultServerURL)
+	client, err := weave.NewClient(defaultServerURL, token)
 	if err != nil {
 		writeError(stderr, fmt.Sprintf("failed to create client: %v", err), ExitAPIError)
 		return nil, ExitAPIError

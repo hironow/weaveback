@@ -53,8 +53,7 @@ func loadTestEnv(t *testing.T) testEnv {
 func newTestClient(t *testing.T, env testEnv) *weave.Client {
 	t.Helper()
 
-	t.Setenv("WANDB_API_KEY", env.apiKey)
-	client, err := weave.NewClient(env.serverURL)
+	client, err := weave.NewClient(env.serverURL, env.apiKey)
 	if err != nil {
 		t.Fatalf("failed to create client: %v", err)
 	}
@@ -285,15 +284,14 @@ func TestFeedbackCreate_InvalidPayload(t *testing.T) {
 }
 
 func TestFeedbackCreate_AuthenticationSkip(t *testing.T) {
-	// given: explicitly unset WANDB_API_KEY
-	t.Setenv("WANDB_API_KEY", "")
+	// given: empty apiKey
 
 	// when
-	_, err := weave.NewClient(defaultServerURL)
+	_, err := weave.NewClient(defaultServerURL, "")
 
 	// then
 	if err == nil {
-		t.Fatal("expected error when WANDB_API_KEY is empty")
+		t.Fatal("expected error when apiKey is empty")
 	}
 	t.Logf("graceful skip: %v", err)
 }

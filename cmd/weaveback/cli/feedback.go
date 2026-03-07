@@ -19,7 +19,7 @@ const (
 	envWandbAPIKey   = "WANDB_API_KEY"
 )
 
-func runFeedback(args []string, stdout, stderr io.Writer) int {
+func runFeedback(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	if len(args) < 1 {
 		printFeedbackUsage(stderr)
 		return ExitUserError
@@ -27,7 +27,7 @@ func runFeedback(args []string, stdout, stderr io.Writer) int {
 
 	switch args[0] {
 	case "create":
-		return runFeedbackCreate(args[1:], stdout, stderr)
+		return runFeedbackCreate(args[1:], stdin, stdout, stderr)
 	case "query":
 		return runFeedbackQuery(args[1:], stdout, stderr)
 	case "purge":
@@ -88,7 +88,7 @@ func writeJSON(w io.Writer, v any) error {
 	return enc.Encode(v)
 }
 
-func runFeedbackCreate(args []string, stdout, stderr io.Writer) int {
+func runFeedbackCreate(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("feedback create", flag.ContinueOnError)
 	fs.SetOutput(stderr)
 

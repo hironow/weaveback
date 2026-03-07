@@ -14,7 +14,7 @@ func TestNoArgs_ShowsUsage(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 
 	// when
-	code := cli.Run([]string{"weaveback"}, &stdout, &stderr)
+	code := cli.Run([]string{"weaveback"}, nil, &stdout, &stderr)
 
 	// then
 	if code != 1 {
@@ -30,7 +30,7 @@ func TestUnknownSubcommand_ExitCode1(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 
 	// when
-	code := cli.Run([]string{"weaveback", "unknown"}, &stdout, &stderr)
+	code := cli.Run([]string{"weaveback", "unknown"}, nil, &stdout, &stderr)
 
 	// then
 	if code != 1 {
@@ -46,7 +46,7 @@ func TestFeedbackNoSubcommand_ShowsUsage(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 
 	// when
-	code := cli.Run([]string{"weaveback", "feedback"}, &stdout, &stderr)
+	code := cli.Run([]string{"weaveback", "feedback"}, nil, &stdout, &stderr)
 
 	// then
 	if code != 1 {
@@ -62,7 +62,7 @@ func TestFeedbackCreate_MissingRequiredFlags(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 
 	// when
-	code := cli.Run([]string{"weaveback", "feedback", "create"}, &stdout, &stderr)
+	code := cli.Run([]string{"weaveback", "feedback", "create"}, nil, &stdout, &stderr)
 
 	// then
 	if code != 1 {
@@ -79,7 +79,7 @@ func TestFeedbackQuery_MissingProjectID(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 
 	// when
-	code := cli.Run([]string{"weaveback", "feedback", "query"}, &stdout, &stderr)
+	code := cli.Run([]string{"weaveback", "feedback", "query"}, nil, &stdout, &stderr)
 
 	// then
 	if code != 1 {
@@ -96,7 +96,7 @@ func TestFeedbackPurge_MissingProjectID(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 
 	// when
-	code := cli.Run([]string{"weaveback", "feedback", "purge"}, &stdout, &stderr)
+	code := cli.Run([]string{"weaveback", "feedback", "purge"}, nil, &stdout, &stderr)
 
 	// then
 	if code != 1 {
@@ -109,7 +109,7 @@ func TestFeedbackReplace_MissingRequiredFlags(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 
 	// when
-	code := cli.Run([]string{"weaveback", "feedback", "replace"}, &stdout, &stderr)
+	code := cli.Run([]string{"weaveback", "feedback", "replace"}, nil, &stdout, &stderr)
 
 	// then
 	if code != 1 {
@@ -122,7 +122,7 @@ func TestFeedbackBatchCreate_MissingFile(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 
 	// when
-	code := cli.Run([]string{"weaveback", "feedback", "batch-create"}, &stdout, &stderr)
+	code := cli.Run([]string{"weaveback", "feedback", "batch-create"}, nil, &stdout, &stderr)
 
 	// then
 	if code != 1 {
@@ -135,7 +135,7 @@ func TestErrorOutput_IsJSON(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 
 	// when
-	cli.Run([]string{"weaveback", "unknown"}, &stdout, &stderr)
+	cli.Run([]string{"weaveback", "unknown"}, nil, &stdout, &stderr)
 
 	// then
 	errOut := stderr.String()
@@ -164,7 +164,7 @@ func TestFeedbackBatchCreate_NonexistentFile(t *testing.T) {
 	code := cli.Run([]string{
 		"weaveback", "feedback", "batch-create",
 		"--file", "/nonexistent/path/data.jsonl",
-	}, &stdout, &stderr)
+	}, nil, &stdout, &stderr)
 
 	// then
 	if code != 1 {
@@ -182,7 +182,7 @@ func TestFeedbackCreate_InvalidPayloadJSON(t *testing.T) {
 		"--project-id", "test",
 		"--feedback-type", "note",
 		"--payload", "not-json",
-	}, &stdout, &stderr)
+	}, nil, &stdout, &stderr)
 
 	// then
 	if code != 1 {
@@ -201,7 +201,7 @@ func TestFeedbackCreate_NoToken_ExitCode2(t *testing.T) {
 		"--project-id", "test-project",
 		"--feedback-type", "note",
 		"--payload", `{"note":"hello"}`,
-	}, &stdout, &stderr)
+	}, nil, &stdout, &stderr)
 
 	// then
 	if code != 2 {

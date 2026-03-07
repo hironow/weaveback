@@ -1,0 +1,1031 @@
+openapi: 3.0.3
+info:
+  title: Weave Feedback API
+  description: 'Cherry-picked feedback endpoints from Weave Trace API.
+
+    Source: https://trace.wandb.ai/openapi.json
+
+    Source version: 0.1.0
+
+    Extracted: 2026-03-08'
+  version: 0.1.0
+  contact:
+    name: Weave Feedback API
+    url: https://wandb.ai
+servers:
+- url: https://trace.wandb.ai
+tags:
+- name: Feedback
+  description: Feedback CRUD operations
+paths:
+  /feedback/create:
+    post:
+      tags:
+      - Feedback
+      summary: Feedback Create
+      description: Add feedback to a call or object.
+      operationId: feedback_create_feedback_create_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackCreateReq'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackCreateRes'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+  /feedback/batch/create:
+    post:
+      tags:
+      - Feedback
+      summary: Feedback Create Batch
+      description: Add multiple feedback items to calls or objects.
+      operationId: feedback_create_batch_feedback_batch_create_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackCreateBatchReq'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackCreateBatchRes'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+  /feedback/query:
+    post:
+      tags:
+      - Feedback
+      summary: Feedback Query
+      description: Query for feedback.
+      operationId: feedback_query_feedback_query_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackQueryReq'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackQueryRes'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+  /feedback/purge:
+    post:
+      tags:
+      - Feedback
+      summary: Feedback Purge
+      description: Permanently delete feedback.
+      operationId: feedback_purge_feedback_purge_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackPurgeReq'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackPurgeRes'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+  /feedback/replace:
+    post:
+      tags:
+      - Feedback
+      summary: Feedback Replace
+      description: Replace existing feedback with new data.
+      operationId: feedback_replace_feedback_replace_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackReplaceReq'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackReplaceRes'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - BearerAuth: []
+components:
+  schemas:
+    AndOperation:
+      properties:
+        $and:
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/LiteralOperation'
+            - $ref: '#/components/schemas/GetFieldOperator'
+            - $ref: '#/components/schemas/ConvertOperation'
+            - type: object
+              description: Recursive AndOperation (flattened)
+            - $ref: '#/components/schemas/OrOperation'
+            - $ref: '#/components/schemas/NotOperation'
+            - $ref: '#/components/schemas/EqOperation'
+            - $ref: '#/components/schemas/GtOperation'
+            - $ref: '#/components/schemas/LtOperation'
+            - $ref: '#/components/schemas/GteOperation'
+            - $ref: '#/components/schemas/LteOperation'
+            - $ref: '#/components/schemas/InOperation'
+            - $ref: '#/components/schemas/ContainsOperation'
+          type: array
+          title: $And
+      type: object
+      required:
+      - $and
+      title: AndOperation
+      description: "Logical AND. All conditions must evaluate to true.\n\nExample:\n    ```\n    {\n        \"$and\": [\n\
+        \            {\"$eq\": [{\"$getField\": \"op_name\"}, {\"$literal\": \"predict\"}]},\n            {\"$gt\": [{\"$getField\"\
+        : \"summary.usage.tokens\"}, {\"$literal\": 1000}]}\n        ]\n    }\n    ```"
+    ContainsOperation:
+      properties:
+        $contains:
+          $ref: '#/components/schemas/ContainsSpec'
+      type: object
+      required:
+      - $contains
+      title: ContainsOperation
+      description: "Case-insensitive substring match.\n\nNot part of MongoDB. Weave-specific addition.\n\nExample:\n    ```\n\
+        \    {\n        \"$contains\": {\n            \"input\": {\"$getField\": \"display_name\"},\n            \"substr\"\
+        : {\"$literal\": \"llm\"},\n            \"case_insensitive\": true\n        }\n    }\n    ```"
+    ContainsSpec:
+      properties:
+        input:
+          anyOf:
+          - $ref: '#/components/schemas/LiteralOperation'
+          - $ref: '#/components/schemas/GetFieldOperator'
+          - $ref: '#/components/schemas/ConvertOperation'
+          - $ref: '#/components/schemas/AndOperation'
+          - $ref: '#/components/schemas/OrOperation'
+          - $ref: '#/components/schemas/NotOperation'
+          - $ref: '#/components/schemas/EqOperation'
+          - $ref: '#/components/schemas/GtOperation'
+          - $ref: '#/components/schemas/LtOperation'
+          - $ref: '#/components/schemas/GteOperation'
+          - $ref: '#/components/schemas/LteOperation'
+          - $ref: '#/components/schemas/InOperation'
+          - $ref: '#/components/schemas/ContainsOperation'
+          title: Input
+        substr:
+          anyOf:
+          - $ref: '#/components/schemas/LiteralOperation'
+          - $ref: '#/components/schemas/GetFieldOperator'
+          - $ref: '#/components/schemas/ConvertOperation'
+          - $ref: '#/components/schemas/AndOperation'
+          - $ref: '#/components/schemas/OrOperation'
+          - $ref: '#/components/schemas/NotOperation'
+          - $ref: '#/components/schemas/EqOperation'
+          - $ref: '#/components/schemas/GtOperation'
+          - $ref: '#/components/schemas/LtOperation'
+          - $ref: '#/components/schemas/GteOperation'
+          - $ref: '#/components/schemas/LteOperation'
+          - $ref: '#/components/schemas/InOperation'
+          - $ref: '#/components/schemas/ContainsOperation'
+          title: Substr
+        case_insensitive:
+          type: boolean
+          nullable: true
+          title: Case Insensitive
+          default: false
+      type: object
+      required:
+      - input
+      - substr
+      title: ContainsSpec
+      description: 'Specification for the `$contains` operation.
+
+
+        - `input`: The string to search.
+
+        - `substr`: The substring to search for.
+
+        - `case_insensitive`: If true, match is case-insensitive.'
+    ConvertOperation:
+      properties:
+        $convert:
+          $ref: '#/components/schemas/ConvertSpec'
+      type: object
+      required:
+      - $convert
+      title: ConvertOperation
+      description: "Convert the input value to a specific type (e.g., `int`, `bool`, `string`).\n\nExample:\n    ```\n   \
+        \ {\n        \"$convert\": {\n            \"input\": {\"$getField\": \"inputs.value\"},\n            \"to\": \"int\"\
+        \n        }\n    }\n    ```"
+    ConvertSpec:
+      properties:
+        input:
+          anyOf:
+          - $ref: '#/components/schemas/LiteralOperation'
+          - $ref: '#/components/schemas/GetFieldOperator'
+          - $ref: '#/components/schemas/ConvertOperation'
+          - $ref: '#/components/schemas/AndOperation'
+          - $ref: '#/components/schemas/OrOperation'
+          - $ref: '#/components/schemas/NotOperation'
+          - $ref: '#/components/schemas/EqOperation'
+          - $ref: '#/components/schemas/GtOperation'
+          - $ref: '#/components/schemas/LtOperation'
+          - $ref: '#/components/schemas/GteOperation'
+          - $ref: '#/components/schemas/LteOperation'
+          - $ref: '#/components/schemas/InOperation'
+          - $ref: '#/components/schemas/ContainsOperation'
+          title: Input
+        to:
+          type: string
+          enum:
+          - double
+          - string
+          - int
+          - bool
+          - exists
+          title: To
+      type: object
+      required:
+      - input
+      - to
+      title: ConvertSpec
+      description: 'Specifies conversion details for `$convert`.
+
+
+        - `input`: The operand to convert.
+
+        - `to`: The type to convert to.'
+    EqOperation:
+      properties:
+        $eq:
+          items:
+            anyOf:
+            - anyOf:
+              - $ref: '#/components/schemas/LiteralOperation'
+              - $ref: '#/components/schemas/GetFieldOperator'
+              - $ref: '#/components/schemas/ConvertOperation'
+              - $ref: '#/components/schemas/AndOperation'
+              - $ref: '#/components/schemas/OrOperation'
+              - $ref: '#/components/schemas/NotOperation'
+              - type: object
+                description: Recursive EqOperation (flattened)
+              - $ref: '#/components/schemas/GtOperation'
+              - $ref: '#/components/schemas/LtOperation'
+              - $ref: '#/components/schemas/GteOperation'
+              - $ref: '#/components/schemas/LteOperation'
+              - $ref: '#/components/schemas/InOperation'
+              - $ref: '#/components/schemas/ContainsOperation'
+            - anyOf:
+              - $ref: '#/components/schemas/LiteralOperation'
+              - $ref: '#/components/schemas/GetFieldOperator'
+              - $ref: '#/components/schemas/ConvertOperation'
+              - $ref: '#/components/schemas/AndOperation'
+              - $ref: '#/components/schemas/OrOperation'
+              - $ref: '#/components/schemas/NotOperation'
+              - type: object
+                description: Recursive EqOperation (flattened)
+              - $ref: '#/components/schemas/GtOperation'
+              - $ref: '#/components/schemas/LtOperation'
+              - $ref: '#/components/schemas/GteOperation'
+              - $ref: '#/components/schemas/LteOperation'
+              - $ref: '#/components/schemas/InOperation'
+              - $ref: '#/components/schemas/ContainsOperation'
+          type: array
+          maxItems: 2
+          minItems: 2
+          title: $Eq
+      type: object
+      required:
+      - $eq
+      title: EqOperation
+      description: "Equality check between two operands.\n\nExample:\n    ```\n    {\n        \"$eq\": [{\"$getField\": \"\
+        op_name\"}, {\"$literal\": \"predict\"}]\n    }\n    ```"
+    FeedbackCreateBatchReq:
+      properties:
+        batch:
+          items:
+            $ref: '#/components/schemas/FeedbackCreateReq'
+          type: array
+          title: Batch
+      additionalProperties: false
+      type: object
+      required:
+      - batch
+      title: FeedbackCreateBatchReq
+    FeedbackCreateBatchRes:
+      properties:
+        res:
+          items:
+            $ref: '#/components/schemas/FeedbackCreateRes'
+          type: array
+          title: Res
+      type: object
+      required:
+      - res
+      title: FeedbackCreateBatchRes
+    FeedbackCreateReq:
+      properties:
+        id:
+          type: string
+          nullable: true
+          title: Id
+          description: If provided by the client, this ID will be used for the feedback row instead of a server-generated
+            one.
+          example: 018f1f2a-9c2b-7d3e-b5a1-8c9d2e4f6a7b
+        project_id:
+          type: string
+          title: Project Id
+          example: entity/project
+        weave_ref:
+          type: string
+          title: Weave Ref
+          example: weave:///entity/project/object/name:digest
+        creator:
+          type: string
+          nullable: true
+          title: Creator
+          example: Jane Smith
+        feedback_type:
+          type: string
+          title: Feedback Type
+          example: custom
+        payload:
+          additionalProperties: true
+          type: object
+          title: Payload
+          example:
+            key: value
+        annotation_ref:
+          type: string
+          nullable: true
+          title: Annotation Ref
+          example: weave:///entity/project/object/name:digest
+        runnable_ref:
+          type: string
+          nullable: true
+          title: Runnable Ref
+          example: weave:///entity/project/op/name:digest
+        call_ref:
+          type: string
+          nullable: true
+          title: Call Ref
+          example: weave:///entity/project/call/call_id
+        trigger_ref:
+          type: string
+          nullable: true
+          title: Trigger Ref
+          example: weave:///entity/project/object/name:digest
+        queue_id:
+          type: string
+          nullable: true
+          title: Queue Id
+          description: The annotation queue ID this feedback was created from. References annotation_queues.id. NULL when
+            feedback is created outside of queues.
+          example: 018f1f2a-9c2b-7d3e-b5a1-8c9d2e4f6a7b
+        wb_user_id:
+          type: string
+          nullable: true
+          title: Wb User Id
+          description: Do not set directly. Server will automatically populate this field.
+      additionalProperties: false
+      type: object
+      required:
+      - project_id
+      - weave_ref
+      - feedback_type
+      - payload
+      title: FeedbackCreateReq
+    FeedbackCreateRes:
+      properties:
+        id:
+          type: string
+          title: Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        wb_user_id:
+          type: string
+          title: Wb User Id
+        payload:
+          additionalProperties: true
+          type: object
+          title: Payload
+      type: object
+      required:
+      - id
+      - created_at
+      - wb_user_id
+      - payload
+      title: FeedbackCreateRes
+    FeedbackPurgeReq:
+      properties:
+        project_id:
+          type: string
+          title: Project Id
+          example: entity/project
+        query:
+          $ref: '#/components/schemas/Query'
+      additionalProperties: false
+      type: object
+      required:
+      - project_id
+      - query
+      title: FeedbackPurgeReq
+    FeedbackPurgeRes:
+      properties: {}
+      type: object
+      title: FeedbackPurgeRes
+    FeedbackQueryReq:
+      properties:
+        project_id:
+          type: string
+          title: Project Id
+          example: entity/project
+        fields:
+          items:
+            type: string
+          type: array
+          nullable: true
+          title: Fields
+          example:
+          - id
+          - feedback_type
+          - payload.note
+        query:
+          allOf:
+          - $ref: '#/components/schemas/Query'
+          - nullable: true
+        sort_by:
+          items:
+            $ref: '#/components/schemas/SortBy'
+          type: array
+          nullable: true
+          title: Sort By
+        limit:
+          type: integer
+          nullable: true
+          title: Limit
+          example: 10
+        offset:
+          type: integer
+          nullable: true
+          title: Offset
+          example: 0
+      additionalProperties: false
+      type: object
+      required:
+      - project_id
+      title: FeedbackQueryReq
+    FeedbackQueryRes:
+      properties:
+        result:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Result
+      type: object
+      required:
+      - result
+      title: FeedbackQueryRes
+    FeedbackReplaceReq:
+      properties:
+        id:
+          type: string
+          nullable: true
+          title: Id
+          description: If provided by the client, this ID will be used for the feedback row instead of a server-generated
+            one.
+          example: 018f1f2a-9c2b-7d3e-b5a1-8c9d2e4f6a7b
+        project_id:
+          type: string
+          title: Project Id
+          example: entity/project
+        weave_ref:
+          type: string
+          title: Weave Ref
+          example: weave:///entity/project/object/name:digest
+        creator:
+          type: string
+          nullable: true
+          title: Creator
+          example: Jane Smith
+        feedback_type:
+          type: string
+          title: Feedback Type
+          example: custom
+        payload:
+          additionalProperties: true
+          type: object
+          title: Payload
+          example:
+            key: value
+        annotation_ref:
+          type: string
+          nullable: true
+          title: Annotation Ref
+          example: weave:///entity/project/object/name:digest
+        runnable_ref:
+          type: string
+          nullable: true
+          title: Runnable Ref
+          example: weave:///entity/project/op/name:digest
+        call_ref:
+          type: string
+          nullable: true
+          title: Call Ref
+          example: weave:///entity/project/call/call_id
+        trigger_ref:
+          type: string
+          nullable: true
+          title: Trigger Ref
+          example: weave:///entity/project/object/name:digest
+        queue_id:
+          type: string
+          nullable: true
+          title: Queue Id
+          description: The annotation queue ID this feedback was created from. References annotation_queues.id. NULL when
+            feedback is created outside of queues.
+          example: 018f1f2a-9c2b-7d3e-b5a1-8c9d2e4f6a7b
+        wb_user_id:
+          type: string
+          nullable: true
+          title: Wb User Id
+          description: Do not set directly. Server will automatically populate this field.
+        feedback_id:
+          type: string
+          title: Feedback Id
+      additionalProperties: false
+      type: object
+      required:
+      - project_id
+      - weave_ref
+      - feedback_type
+      - payload
+      - feedback_id
+      title: FeedbackReplaceReq
+    FeedbackReplaceRes:
+      properties:
+        id:
+          type: string
+          title: Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        wb_user_id:
+          type: string
+          title: Wb User Id
+        payload:
+          additionalProperties: true
+          type: object
+          title: Payload
+      type: object
+      required:
+      - id
+      - created_at
+      - wb_user_id
+      - payload
+      title: FeedbackReplaceRes
+    GetFieldOperator:
+      properties:
+        $getField:
+          type: string
+          title: $Getfield
+      type: object
+      required:
+      - $getField
+      title: GetFieldOperator
+      description: "Access a field on the traced call.\n\nSupports dot notation for nested access, e.g. `summary.usage.tokens`.\n\
+        \nOnly works on fields present in the `CallSchema`, including:\n- Top-level fields like `op_name`, `trace_id`, `started_at`\n\
+        - Nested fields like `inputs.input_name`, `summary.usage.tokens`, etc.\n\nExample:\n    ```\n    {\"$getField\": \"\
+        op_name\"}\n    ```"
+    GtOperation:
+      properties:
+        $gt:
+          items:
+            anyOf:
+            - anyOf:
+              - $ref: '#/components/schemas/LiteralOperation'
+              - $ref: '#/components/schemas/GetFieldOperator'
+              - $ref: '#/components/schemas/ConvertOperation'
+              - $ref: '#/components/schemas/AndOperation'
+              - $ref: '#/components/schemas/OrOperation'
+              - $ref: '#/components/schemas/NotOperation'
+              - $ref: '#/components/schemas/EqOperation'
+              - type: object
+                description: Recursive GtOperation (flattened)
+              - $ref: '#/components/schemas/LtOperation'
+              - $ref: '#/components/schemas/GteOperation'
+              - $ref: '#/components/schemas/LteOperation'
+              - $ref: '#/components/schemas/InOperation'
+              - $ref: '#/components/schemas/ContainsOperation'
+            - anyOf:
+              - $ref: '#/components/schemas/LiteralOperation'
+              - $ref: '#/components/schemas/GetFieldOperator'
+              - $ref: '#/components/schemas/ConvertOperation'
+              - $ref: '#/components/schemas/AndOperation'
+              - $ref: '#/components/schemas/OrOperation'
+              - $ref: '#/components/schemas/NotOperation'
+              - $ref: '#/components/schemas/EqOperation'
+              - type: object
+                description: Recursive GtOperation (flattened)
+              - $ref: '#/components/schemas/LtOperation'
+              - $ref: '#/components/schemas/GteOperation'
+              - $ref: '#/components/schemas/LteOperation'
+              - $ref: '#/components/schemas/InOperation'
+              - $ref: '#/components/schemas/ContainsOperation'
+          type: array
+          maxItems: 2
+          minItems: 2
+          title: $Gt
+      type: object
+      required:
+      - $gt
+      title: GtOperation
+      description: "Greater than comparison.\n\nExample:\n    ```\n    {\n        \"$gt\": [{\"$getField\": \"summary.usage.tokens\"\
+        }, {\"$literal\": 100}]\n    }\n    ```"
+    GteOperation:
+      properties:
+        $gte:
+          items:
+            anyOf:
+            - anyOf:
+              - $ref: '#/components/schemas/LiteralOperation'
+              - $ref: '#/components/schemas/GetFieldOperator'
+              - $ref: '#/components/schemas/ConvertOperation'
+              - $ref: '#/components/schemas/AndOperation'
+              - $ref: '#/components/schemas/OrOperation'
+              - $ref: '#/components/schemas/NotOperation'
+              - $ref: '#/components/schemas/EqOperation'
+              - $ref: '#/components/schemas/GtOperation'
+              - $ref: '#/components/schemas/LtOperation'
+              - type: object
+                description: Recursive GteOperation (flattened)
+              - $ref: '#/components/schemas/LteOperation'
+              - $ref: '#/components/schemas/InOperation'
+              - $ref: '#/components/schemas/ContainsOperation'
+            - anyOf:
+              - $ref: '#/components/schemas/LiteralOperation'
+              - $ref: '#/components/schemas/GetFieldOperator'
+              - $ref: '#/components/schemas/ConvertOperation'
+              - $ref: '#/components/schemas/AndOperation'
+              - $ref: '#/components/schemas/OrOperation'
+              - $ref: '#/components/schemas/NotOperation'
+              - $ref: '#/components/schemas/EqOperation'
+              - $ref: '#/components/schemas/GtOperation'
+              - $ref: '#/components/schemas/LtOperation'
+              - type: object
+                description: Recursive GteOperation (flattened)
+              - $ref: '#/components/schemas/LteOperation'
+              - $ref: '#/components/schemas/InOperation'
+              - $ref: '#/components/schemas/ContainsOperation'
+          type: array
+          maxItems: 2
+          minItems: 2
+          title: $Gte
+      type: object
+      required:
+      - $gte
+      title: GteOperation
+      description: "Greater than or equal comparison.\n\nExample:\n    ```\n    {\n        \"$gte\": [{\"$getField\": \"summary.usage.tokens\"\
+        }, {\"$literal\": 100}]\n    }\n    ```"
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    InOperation:
+      properties:
+        $in:
+          items:
+            anyOf:
+            - anyOf:
+              - $ref: '#/components/schemas/LiteralOperation'
+              - $ref: '#/components/schemas/GetFieldOperator'
+              - $ref: '#/components/schemas/ConvertOperation'
+              - $ref: '#/components/schemas/AndOperation'
+              - $ref: '#/components/schemas/OrOperation'
+              - $ref: '#/components/schemas/NotOperation'
+              - $ref: '#/components/schemas/EqOperation'
+              - $ref: '#/components/schemas/GtOperation'
+              - $ref: '#/components/schemas/LtOperation'
+              - $ref: '#/components/schemas/GteOperation'
+              - $ref: '#/components/schemas/LteOperation'
+              - type: object
+                description: Recursive InOperation (flattened)
+              - $ref: '#/components/schemas/ContainsOperation'
+            - items:
+                anyOf:
+                - $ref: '#/components/schemas/LiteralOperation'
+                - $ref: '#/components/schemas/GetFieldOperator'
+                - $ref: '#/components/schemas/ConvertOperation'
+                - $ref: '#/components/schemas/AndOperation'
+                - $ref: '#/components/schemas/OrOperation'
+                - $ref: '#/components/schemas/NotOperation'
+                - $ref: '#/components/schemas/EqOperation'
+                - $ref: '#/components/schemas/GtOperation'
+                - $ref: '#/components/schemas/LtOperation'
+                - $ref: '#/components/schemas/GteOperation'
+                - $ref: '#/components/schemas/LteOperation'
+                - type: object
+                  description: Recursive InOperation (flattened)
+                - $ref: '#/components/schemas/ContainsOperation'
+              type: array
+          type: array
+          maxItems: 2
+          minItems: 2
+          title: $In
+      type: object
+      required:
+      - $in
+      title: InOperation
+      description: "Membership check.\n\nReturns true if the left operand is in the list provided as the second operand.\n\
+        \nExample:\n    ```\n    {\n        \"$in\": [\n            {\"$getField\": \"op_name\"},\n            [{\"$literal\"\
+        : \"predict\"}, {\"$literal\": \"generate\"}]\n        ]\n    }\n    ```"
+    LiteralOperation:
+      properties:
+        $literal:
+          anyOf:
+          - type: string
+          - type: integer
+          - type: number
+          - type: boolean
+          - additionalProperties:
+              type: object
+              description: Recursive LiteralOperation (flattened)
+            type: object
+          - items:
+              type: object
+              description: Recursive LiteralOperation (flattened)
+            type: array
+          nullable: true
+          title: $Literal
+      type: object
+      required:
+      - $literal
+      title: LiteralOperation
+      description: "Represents a constant value in the query language.\n\nThis can be any standard JSON-serializable value.\n\
+        \nExample:\n    ```\n    {\"$literal\": \"predict\"}\n    ```"
+    LtOperation:
+      properties:
+        $lt:
+          items:
+            anyOf:
+            - anyOf:
+              - $ref: '#/components/schemas/LiteralOperation'
+              - $ref: '#/components/schemas/GetFieldOperator'
+              - $ref: '#/components/schemas/ConvertOperation'
+              - $ref: '#/components/schemas/AndOperation'
+              - $ref: '#/components/schemas/OrOperation'
+              - $ref: '#/components/schemas/NotOperation'
+              - $ref: '#/components/schemas/EqOperation'
+              - $ref: '#/components/schemas/GtOperation'
+              - type: object
+                description: Recursive LtOperation (flattened)
+              - $ref: '#/components/schemas/GteOperation'
+              - $ref: '#/components/schemas/LteOperation'
+              - $ref: '#/components/schemas/InOperation'
+              - $ref: '#/components/schemas/ContainsOperation'
+            - anyOf:
+              - $ref: '#/components/schemas/LiteralOperation'
+              - $ref: '#/components/schemas/GetFieldOperator'
+              - $ref: '#/components/schemas/ConvertOperation'
+              - $ref: '#/components/schemas/AndOperation'
+              - $ref: '#/components/schemas/OrOperation'
+              - $ref: '#/components/schemas/NotOperation'
+              - $ref: '#/components/schemas/EqOperation'
+              - $ref: '#/components/schemas/GtOperation'
+              - type: object
+                description: Recursive LtOperation (flattened)
+              - $ref: '#/components/schemas/GteOperation'
+              - $ref: '#/components/schemas/LteOperation'
+              - $ref: '#/components/schemas/InOperation'
+              - $ref: '#/components/schemas/ContainsOperation'
+          type: array
+          maxItems: 2
+          minItems: 2
+          title: $Lt
+      type: object
+      required:
+      - $lt
+      title: LtOperation
+      description: "Less than comparison.\n\nExample:\n    ```\n    {\n        \"$lt\": [{\"$getField\": \"summary.usage.tokens\"\
+        }, {\"$literal\": 100}]\n    }\n    ```"
+    LteOperation:
+      properties:
+        $lte:
+          items:
+            anyOf:
+            - anyOf:
+              - $ref: '#/components/schemas/LiteralOperation'
+              - $ref: '#/components/schemas/GetFieldOperator'
+              - $ref: '#/components/schemas/ConvertOperation'
+              - $ref: '#/components/schemas/AndOperation'
+              - $ref: '#/components/schemas/OrOperation'
+              - $ref: '#/components/schemas/NotOperation'
+              - $ref: '#/components/schemas/EqOperation'
+              - $ref: '#/components/schemas/GtOperation'
+              - $ref: '#/components/schemas/LtOperation'
+              - $ref: '#/components/schemas/GteOperation'
+              - type: object
+                description: Recursive LteOperation (flattened)
+              - $ref: '#/components/schemas/InOperation'
+              - $ref: '#/components/schemas/ContainsOperation'
+            - anyOf:
+              - $ref: '#/components/schemas/LiteralOperation'
+              - $ref: '#/components/schemas/GetFieldOperator'
+              - $ref: '#/components/schemas/ConvertOperation'
+              - $ref: '#/components/schemas/AndOperation'
+              - $ref: '#/components/schemas/OrOperation'
+              - $ref: '#/components/schemas/NotOperation'
+              - $ref: '#/components/schemas/EqOperation'
+              - $ref: '#/components/schemas/GtOperation'
+              - $ref: '#/components/schemas/LtOperation'
+              - $ref: '#/components/schemas/GteOperation'
+              - type: object
+                description: Recursive LteOperation (flattened)
+              - $ref: '#/components/schemas/InOperation'
+              - $ref: '#/components/schemas/ContainsOperation'
+          type: array
+          maxItems: 2
+          minItems: 2
+          title: $Lte
+      type: object
+      required:
+      - $lte
+      title: LteOperation
+      description: "Less than or equal comparison.\n\nExample:\n    ```\n    {\n        \"$lte\": [{\"$getField\": \"summary.usage.tokens\"\
+        }, {\"$literal\": 100}]\n    }\n    ```"
+    NotOperation:
+      properties:
+        $not:
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/LiteralOperation'
+            - $ref: '#/components/schemas/GetFieldOperator'
+            - $ref: '#/components/schemas/ConvertOperation'
+            - $ref: '#/components/schemas/AndOperation'
+            - $ref: '#/components/schemas/OrOperation'
+            - type: object
+              description: Recursive NotOperation (flattened)
+            - $ref: '#/components/schemas/EqOperation'
+            - $ref: '#/components/schemas/GtOperation'
+            - $ref: '#/components/schemas/LtOperation'
+            - $ref: '#/components/schemas/GteOperation'
+            - $ref: '#/components/schemas/LteOperation'
+            - $ref: '#/components/schemas/InOperation'
+            - $ref: '#/components/schemas/ContainsOperation'
+          type: array
+          maxItems: 1
+          minItems: 1
+          title: $Not
+      type: object
+      required:
+      - $not
+      title: NotOperation
+      description: "Logical NOT. Inverts the condition.\n\nExample:\n    ```\n    {\n        \"$not\": [\n            {\"\
+        $eq\": [{\"$getField\": \"op_name\"}, {\"$literal\": \"debug\"}]}\n        ]\n    }\n    ```"
+    OrOperation:
+      properties:
+        $or:
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/LiteralOperation'
+            - $ref: '#/components/schemas/GetFieldOperator'
+            - $ref: '#/components/schemas/ConvertOperation'
+            - $ref: '#/components/schemas/AndOperation'
+            - type: object
+              description: Recursive OrOperation (flattened)
+            - $ref: '#/components/schemas/NotOperation'
+            - $ref: '#/components/schemas/EqOperation'
+            - $ref: '#/components/schemas/GtOperation'
+            - $ref: '#/components/schemas/LtOperation'
+            - $ref: '#/components/schemas/GteOperation'
+            - $ref: '#/components/schemas/LteOperation'
+            - $ref: '#/components/schemas/InOperation'
+            - $ref: '#/components/schemas/ContainsOperation'
+          type: array
+          title: $Or
+      type: object
+      required:
+      - $or
+      title: OrOperation
+      description: "Logical OR. At least one condition must be true.\n\nExample:\n    ```\n    {\n        \"$or\": [\n   \
+        \         {\"$eq\": [{\"$getField\": \"op_name\"}, {\"$literal\": \"a\"}]},\n            {\"$eq\": [{\"$getField\"\
+        : \"op_name\"}, {\"$literal\": \"b\"}]}\n        ]\n    }\n    ```"
+    Query:
+      properties:
+        $expr:
+          anyOf:
+          - $ref: '#/components/schemas/AndOperation'
+          - $ref: '#/components/schemas/OrOperation'
+          - $ref: '#/components/schemas/NotOperation'
+          - $ref: '#/components/schemas/EqOperation'
+          - $ref: '#/components/schemas/GtOperation'
+          - $ref: '#/components/schemas/LtOperation'
+          - $ref: '#/components/schemas/GteOperation'
+          - $ref: '#/components/schemas/LteOperation'
+          - $ref: '#/components/schemas/InOperation'
+          - $ref: '#/components/schemas/ContainsOperation'
+          title: $Expr
+      additionalProperties: false
+      type: object
+      required:
+      - $expr
+      title: Query
+    SortBy:
+      properties:
+        field:
+          type: string
+          title: Field
+        direction:
+          type: string
+          enum:
+          - asc
+          - desc
+          title: Direction
+      additionalProperties: false
+      type: object
+      required:
+      - field
+      - direction
+      title: SortBy
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: W&B API key as Bearer token
+security:
+- BearerAuth: []

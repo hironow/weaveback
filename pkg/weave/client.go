@@ -59,7 +59,7 @@ func NewClient(serverURL string) (*Client, error) {
 	retryClient.HTTPClient.Timeout = defaultTimeout
 
 	authEditor := func(ctx context.Context, req *http.Request) error {
-		req.Header.Set("Authorization", "Bearer "+apiKey)
+		req.SetBasicAuth("api", apiKey)
 		return nil
 	}
 

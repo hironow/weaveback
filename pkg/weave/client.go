@@ -43,7 +43,7 @@ type Client struct {
 }
 
 // NewClient creates a new Weave API client.
-// It reads the WANDB_API_KEY environment variable for Bearer token authentication.
+// It reads the WANDB_API_KEY environment variable for HTTP Basic authentication.
 func NewClient(serverURL string) (*Client, error) {
 	apiKey := os.Getenv(envWandbAPIKey)
 	if apiKey == "" {

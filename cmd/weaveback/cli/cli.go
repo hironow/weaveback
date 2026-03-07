@@ -15,9 +15,9 @@ const (
 	ExitPartialError = 4
 )
 
-// Run executes the CLI with the given arguments and writers for stdout/stderr.
+// Run executes the CLI with the given arguments and I/O streams.
 // It returns an exit code.
-func Run(args []string, stdout, stderr io.Writer) int {
+func Run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	if len(args) < 2 {
 		printUsage(stderr)
 		return ExitUserError
@@ -25,7 +25,7 @@ func Run(args []string, stdout, stderr io.Writer) int {
 
 	switch args[1] {
 	case "feedback":
-		return runFeedback(args[2:], stdout, stderr)
+		return runFeedback(args[2:], stdin, stdout, stderr)
 	default:
 		writeError(stderr, fmt.Sprintf("unknown subcommand: %s", args[1]), ExitUserError)
 		return ExitUserError

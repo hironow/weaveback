@@ -19,7 +19,7 @@ const (
 	envWandbAPIKey   = "WANDB_API_KEY"
 )
 
-func runFeedback(args []string, stdout, stderr io.Writer) int {
+func runFeedback(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	if len(args) < 1 {
 		printFeedbackUsage(stderr)
 		return ExitUserError
@@ -27,7 +27,7 @@ func runFeedback(args []string, stdout, stderr io.Writer) int {
 
 	switch args[0] {
 	case "create":
-		return runFeedbackCreate(args[1:], stdout, stderr)
+		return runFeedbackCreate(args[1:], stdin, stdout, stderr)
 	case "query":
 		return runFeedbackQuery(args[1:], stdout, stderr)
 	case "purge":
@@ -88,7 +88,7 @@ func writeJSON(w io.Writer, v any) error {
 	return enc.Encode(v)
 }
 
-func runFeedbackCreate(args []string, stdout, stderr io.Writer) int {
+func runFeedbackCreate(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("feedback create", flag.ContinueOnError)
 	fs.SetOutput(stderr)
 
@@ -97,9 +97,18 @@ func runFeedbackCreate(args []string, stdout, stderr io.Writer) int {
 	payload := fs.String("payload", "", "Payload as JSON string (required)")
 	callRef := fs.String("call-ref", "", "Call reference (optional)")
 	token := fs.String("token", "", "API token (overrides WANDB_API_KEY)")
+	useStdin := fs.Bool("stdin", false, "Read JSON Lines from stdin (mutually exclusive with --payload)")
 
 	if err := fs.Parse(args); err != nil {
 		return ExitUserError
+	}
+
+	if *useStdin {
+		if *payload != "" {
+			writeError(stderr, "--stdin and --payload are mutually exclusive", ExitUserError)
+			return ExitUserError
+		}
+		return runFeedbackCreateStdin(*token, stdin, stdout, stderr)
 	}
 
 	if *projectID == "" || *feedbackType == "" || *payload == "" {
@@ -135,6 +144,31 @@ func runFeedbackCreate(args []string, stdout, stderr io.Writer) int {
 
 	writeJSON(stdout, res)
 	return ExitSuccess
+}
+
+func runFeedbackCreateStdin(tokenFlag string, stdin io.Reader, stdout, stderr io.Writer) int {
+	client, code := newClient(tokenFlag, stderr)
+	if code != ExitSuccess {
+		return code
+	}
+
+	processor := func(line string) (json.RawMessage, error) {
+		var req gen.FeedbackCreateReq
+		if err := json.Unmarshal([]byte(line), &req); err != nil {
+			return nil, fmt.Errorf("invalid request: %w", err)
+		}
+		res, err := client.CreateFeedback(context.Background(), req)
+		if err != nil {
+			return nil, err
+		}
+		b, err := json.Marshal(res)
+		if err != nil {
+			return nil, fmt.Errorf("marshal response: %w", err)
+		}
+		return b, nil
+	}
+
+	return ProcessStdinLines(stdin, processor, stdout, stderr)
 }
 
 func runFeedbackQuery(args []string, stdout, stderr io.Writer) int {

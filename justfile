@@ -12,10 +12,9 @@ test:
 lint:
     go vet ./...
 
-# Generate code from OpenAPI spec (requires oapi-codegen, see MY-394)
+# Generate Go code from OpenAPI spec via oapi-codegen
 generate:
-    @echo "generate: not yet configured (see MY-394)" >&2
-    @exit 1
+    go generate ./pkg/weave/gen/
 
 # Fetch OpenAPI spec from Weave API (see MY-393)
 fetch-spec:

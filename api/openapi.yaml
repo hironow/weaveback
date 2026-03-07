@@ -498,9 +498,7 @@ components:
           - feedback_type
           - payload.note
         query:
-          allOf:
-          - $ref: '#/components/schemas/Query'
-          - nullable: true
+          $ref: '#/components/schemas/Query'
         sort_by:
           items:
             $ref: '#/components/schemas/SortBy'

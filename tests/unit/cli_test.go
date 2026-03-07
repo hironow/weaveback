@@ -190,12 +190,12 @@ func TestFeedbackCreate_InvalidPayloadJSON(t *testing.T) {
 	}
 }
 
-func TestFeedbackCreate_NoToken_ExitCode2(t *testing.T) {
+func TestFeedbackCreate_MissingWeaveRef_ExitCode1(t *testing.T) {
 	// given
 	var stdout, stderr bytes.Buffer
 	t.Setenv("WANDB_API_KEY", "")
 
-	// when
+	// when — all other required flags present, but --weave-ref is missing
 	code := cli.Run([]string{
 		"weaveback", "feedback", "create",
 		"--project-id", "test-project",
@@ -204,7 +204,55 @@ func TestFeedbackCreate_NoToken_ExitCode2(t *testing.T) {
 	}, nil, &stdout, &stderr)
 
 	// then
+	if code != 1 {
+		t.Errorf("expected exit code 1 (missing --weave-ref), got %d", code)
+	}
+	errOut := stderr.String()
+	if !strings.Contains(errOut, "weave-ref") {
+		t.Errorf("expected error mentioning weave-ref, got: %s", errOut)
+	}
+}
+
+func TestFeedbackCreate_WithWeaveRef_NoToken_ExitCode2(t *testing.T) {
+	// given
+	var stdout, stderr bytes.Buffer
+	t.Setenv("WANDB_API_KEY", "")
+
+	// when — all required flags including --weave-ref, but no token
+	code := cli.Run([]string{
+		"weaveback", "feedback", "create",
+		"--project-id", "test-project",
+		"--feedback-type", "note",
+		"--payload", `{"note":"hello"}`,
+		"--weave-ref", "weave:///entity/project/object/name:version",
+	}, nil, &stdout, &stderr)
+
+	// then
 	if code != 2 {
 		t.Errorf("expected exit code 2 (auth error), got %d", code)
+	}
+}
+
+func TestFeedbackReplace_MissingWeaveRef_ExitCode1(t *testing.T) {
+	// given
+	var stdout, stderr bytes.Buffer
+	t.Setenv("WANDB_API_KEY", "")
+
+	// when — all other required flags present, but --weave-ref is missing
+	code := cli.Run([]string{
+		"weaveback", "feedback", "replace",
+		"--feedback-id", "test-id",
+		"--project-id", "test-project",
+		"--feedback-type", "note",
+		"--payload", `{"note":"hello"}`,
+	}, nil, &stdout, &stderr)
+
+	// then
+	if code != 1 {
+		t.Errorf("expected exit code 1 (missing --weave-ref), got %d", code)
+	}
+	errOut := stderr.String()
+	if !strings.Contains(errOut, "weave-ref") {
+		t.Errorf("expected error mentioning weave-ref, got: %s", errOut)
 	}
 }

@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hironow/rest/pkg/weave"
-	"github.com/hironow/rest/pkg/weave/gen"
+	"github.com/hironow/weaveback/pkg/weave"
+	"github.com/hironow/weaveback/pkg/weave/gen"
 )
 
 func TestAddReaction_EmptyEmoji(t *testing.T) {

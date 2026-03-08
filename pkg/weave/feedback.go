@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/hironow/rest/pkg/weave/gen"
+	"github.com/hironow/weaveback/pkg/weave/gen"
 )
 
 var emojiPattern = regexp.MustCompile(`^[a-zA-Z0-9_-]{1,64}$`)

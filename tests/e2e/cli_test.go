@@ -108,6 +108,7 @@ func TestCLI_FeedbackLifecycle(t *testing.T) {
 		"--project-id", projectID,
 		"--feedback-type", "wandb.note.1",
 		"--payload", createPayload,
+		"--weave-ref", "weave:///e2e-test/obj/test-ref",
 	)
 	if code != 0 {
 		t.Fatalf("create: expected exit code 0, got %d\nstdout: %s\nstderr: %s", code, stdout, stderr)
@@ -149,6 +150,7 @@ func TestCLI_FeedbackLifecycle(t *testing.T) {
 		"--project-id", projectID,
 		"--feedback-type", "wandb.note.1",
 		"--payload", replacePayload,
+		"--weave-ref", "weave:///e2e-test/obj/test-ref",
 	)
 	if code != 0 {
 		t.Fatalf("replace: expected exit code 0, got %d\nstdout: %s\nstderr: %s", code, stdout, stderr)
@@ -282,6 +284,7 @@ func TestCLI_FeedbackCreate_AuthFailure(t *testing.T) {
 		"--project-id", "test/project",
 		"--feedback-type", "wandb.note.1",
 		"--payload", `{"note":"test"}`,
+		"--weave-ref", "weave:///test/obj/ref",
 		"--token", "invalid-key-12345",
 	)
 	// Should get either auth error (exit 2) or API error (exit 3)

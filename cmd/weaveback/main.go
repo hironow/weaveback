@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/hironow/rest/cmd/weaveback/cli"
+	"github.com/hironow/weaveback/cmd/weaveback/cli"
 )
 
 func main() {

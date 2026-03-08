@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/hironow/rest/pkg/weave/gen"
+	"github.com/hironow/weaveback/pkg/weave/gen"
 )
 
 const (

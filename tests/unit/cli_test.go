@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hironow/rest/cmd/weaveback/cli"
+	"github.com/hironow/weaveback/cmd/weaveback/cli"
 )
 
 func TestNoArgs_ShowsUsage(t *testing.T) {

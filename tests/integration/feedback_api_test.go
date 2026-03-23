@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hironow/rest/pkg/weave"
-	"github.com/hironow/rest/pkg/weave/gen"
+	"github.com/hironow/weaveback/pkg/weave"
+	"github.com/hironow/weaveback/pkg/weave/gen"
 )
 
 const (

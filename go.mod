@@ -1,4 +1,4 @@
-module github.com/hironow/rest
+module github.com/hironow/weaveback
 
 go 1.26.1
 

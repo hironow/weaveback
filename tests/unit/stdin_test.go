@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hironow/rest/cmd/weaveback/cli"
+	"github.com/hironow/weaveback/cmd/weaveback/cli"
 )
 
 func TestProcessStdinLines_EmptyInput_ExitCode0(t *testing.T) {

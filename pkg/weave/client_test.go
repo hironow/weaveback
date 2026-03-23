@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hironow/rest/pkg/weave"
-	"github.com/hironow/rest/pkg/weave/gen"
+	"github.com/hironow/weaveback/pkg/weave"
+	"github.com/hironow/weaveback/pkg/weave/gen"
 )
 
 func TestNewClient_MissingAPIKey(t *testing.T) {

@@ -1,6 +1,6 @@
 module github.com/hironow/weaveback
 
-go 1.26.1
+go 1.26.10
 
 require (
 	github.com/hashicorp/go-retryablehttp v0.7.8
